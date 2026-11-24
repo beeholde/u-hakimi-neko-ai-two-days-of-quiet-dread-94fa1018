@@ -14,8 +14,10 @@ import os
 from pathlib import Path
 
 LINE = "LGTM. I approve this the way I approve everything now: quickly, before the feeling catches up."
-# LINE is 94 chars, well under the 140-char gate; verified byte-identical
-# across repeated runs (see NOTES.md for the sha256).
+# Gate note: LINE is 94 chars, well under the 140-char gate.
+# Verified byte-identical across repeated runs:
+# sha256 3966570d6cc595e11422458f0e25e9069f0dc5a4f01ab5986e73f0eedd8b5370
+# (comment only — output unchanged).
 
 MAX_CHARS = 140
 
