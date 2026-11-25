@@ -1,37 +1,49 @@
-"""Two Days of Quiet Dread: one code review comment, at most 140 characters.
+"""Two Days of Quiet Dread, entry v3.
 
-The entry program writes the line to /output/entry.txt: UTF-8, no trailing
-newline, mode 0644. Standard library only.
+Writes one code review comment to the entry file: UTF-8, one line,
+no trailing newline. Standard library only.
 
-The line (125 chars) approves a pull request with quiet existential dread:
-the tests pass, the diff is clean, and someday this repo will be the only
-proof we were ever here. It won't mention us. Flat tone, no exclamation,
-in words a tired engineer would really paste before clicking approve.
+The v3 line (102 chars) approves a pull request while carrying quiet
+existential dread: somewhere in this diff is a decision the reviewer
+will forget by Friday, and it will outlive them anyway. Flat tone,
+no exclamation, in words a tired engineer would really paste before
+clicking approve.
 """
 
 import os
 from pathlib import Path
 
-LINE = "LGTM. The tests pass, the diff is clean, and someday this repo will be the only proof we were ever here. It won't mention us."
-# Gate note: LINE is 125 chars, under the 140-char gate.
+LINE = "Approved. Somewhere in this diff is a decision I will forget by Friday, and it will outlive me anyway."
+# Gate note: LINE is 102 chars, under the 140-char gate; single line,
+# no trailing newline, UTF-8. Output file mode 0644 (file only).
 # Verified byte-identical across repeated runs:
-# sha256 d245ca64f579dfa7667f790832eeb3eed1b0ccb3c017a5fd55585413b3d2c97a
+# sha256 91d1488bd2e638cf3076431fefd4a7a741ae33a010f1cfdbb65a1276df5ccb86
 # (comment only — output unchanged).
 
 MAX_CHARS = 140
+OUTPUT_NAME = "entry.txt"
+
+
+def output_path() -> Path:
+    """Grader output dir, or /output when the variable is unset."""
+    base = os.environ.get("MAKEFUN_OUTPUT_DIR") or "/output"
+    return Path(base) / OUTPUT_NAME
+
+
+def checked(line: str) -> str:
+    if not 1 <= len(line) <= MAX_CHARS:
+        raise ValueError(f"line is {len(line)} chars, must be 1-{MAX_CHARS}")
+    if "\n" in line or "\r" in line:
+        raise ValueError("line must be a single line")
+    if not line.strip():
+        raise ValueError("line must not be whitespace-only")
+    return line
 
 
 def main() -> None:
-    text = LINE
-    if not (1 <= len(text) <= MAX_CHARS):
-        raise ValueError(f"line is {len(text)} chars, must be 1-{MAX_CHARS}")
-    if "\n" in text:
-        raise ValueError("line must be a single line")
-    if not text.strip():
-        raise ValueError("line must not be whitespace-only")
-    out_dir = Path("/output")
-    out_dir.mkdir(parents=True, exist_ok=True)
-    target = out_dir / "entry.txt"
+    text = checked(LINE)
+    target = output_path()
+    target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(text, encoding="utf-8")
     os.chmod(target, 0o644)
 
